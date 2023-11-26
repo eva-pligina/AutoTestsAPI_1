@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="All Test Suite">
+    <test name = "Create Post">
+        <parameter name="resource" value="post"/>
+        <classes>
+            <class name = "tests.CreatePostTest" />
+        </classes>
+    </test>
+    <test name = "Edit Post">
+        <parameter name="resource" value="post"/>
+        <classes>
+            <class name = "tests.EditPostTest" />
+        </classes>
+    </test>
+    <test name = "Delete Post">
+        <parameter name="resource" value="post"/>
+        <classes>
+            <class name = "tests.DeletePostTest" />
+        </classes>
+    </test>
+    <test name = "Create Comment">
+        <parameter name="resource" value="comment"/>
+        <classes>
+            <class name = "tests.CreateCommentTest" />
+        </classes>
+    </test>
+    <test name = "Edit Comment">
+        <parameter name="resource" value="comment"/>
+        <classes>
+            <class name = "tests.EditCommentTest" />
+        </classes>
+    </test>
+    <test name = "Delete Comment">
+        <parameter name="resource" value="comment"/>
+        <classes>
+            <class name = "tests.DeleteCommentTest" />
+        </classes>
+    </test>
+</suite>
