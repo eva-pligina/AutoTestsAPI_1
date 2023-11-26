@@ -10,7 +10,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 @Epic("Пост")
@@ -19,29 +18,31 @@ public class DeletePostTest extends BaseTest {
     private int id;
 
     @BeforeMethod
-    public void beforeMethod() throws SQLException {
-        steps.tableRowManipulationDB(SQL_REQUEST_CREATE_POST);
-        id = steps.getRowId(SQL_REQUEST_SELECT_POST_LAST);
+    @Parameters({"resource"})
+    public void beforeMethod(String resource) {
+        databaseActions.createTableRowDB(resource);
+        id = databaseActions.getRowId(resource);
     }
 
     @AfterMethod
-    public void afterMethod() throws SQLException {
-        steps.tableRowManipulationDB(SQL_REQUEST_DELETE_POST_LAST);
-        steps.tableRowManipulationDB(SQL_REQUEST_DELETE_POST_BY_ID + id);
+    @Parameters({"resource"})
+    public void afterMethod(String resource) {
+        databaseActions.deleteLastTableRowDB(resource);
+        databaseActions.deleteTableRowByIdDB(resource, id);
     }
 
     @Test
     @Story("DELETE-запрос для удаления поста по указанному id")
     @Severity(SeverityLevel.BLOCKER)
     @Parameters({"resource"})
-    public void deletePostTest(String resource) throws SQLException {
+    public void deletePostTest(String resource) {
         requestSpecification
             .when()
                 .delete(POSTS_ENDPOINT + id)
             .then()
                 .statusCode(200);
 
-        ArrayList listOfDataFromDB = steps.getDataFromRowDB(resource, SQL_REQUEST_SELECT_POST_BY_ID + id);
+        ArrayList listOfDataFromDB = databaseActions.getDataFromRowByIdDB(resource, id);
 
         softAssert.assertEquals(id, listOfDataFromDB.get(0), "Значение поля id не совпадает");
         softAssert.assertEquals("trash", listOfDataFromDB.get(3), "Значение поля status в БД не соответствует знач-ю trash. Delete-запрос прошёл некорректно");

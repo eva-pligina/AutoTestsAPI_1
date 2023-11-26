@@ -10,7 +10,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 @Epic("Комментарий")
@@ -19,28 +18,30 @@ public class DeleteCommentTest extends BaseTest {
     private int id;
 
     @BeforeMethod
-    public void beforeMethod() throws SQLException {
-        steps.tableRowManipulationDB(SQL_REQUEST_CREATE_COMMENT);
-        id = steps.getRowId(SQL_REQUEST_SELECT_COMMENT_LAST);
+    @Parameters({"resource"})
+    public void beforeMethod(String resource) {
+        databaseActions.createTableRowDB(resource);
+        id = databaseActions.getRowId(resource);
     }
 
     @AfterMethod
-    public void afterMethod() throws SQLException {
-        steps.tableRowManipulationDB(SQL_REQUEST_DELETE_COMMENT_LAST);
+    @Parameters({"resource"})
+    public void afterMethod(String resource) {
+        databaseActions.deleteLastTableRowDB(resource);
     }
 
     @Test
     @Story("DELETE-запрос для удаления комментария по указанному id")
     @Severity(SeverityLevel.BLOCKER)
     @Parameters({"resource"})
-    public void deleteCommentTest(String resource) throws SQLException {
+    public void deleteCommentTest(String resource) {
         requestSpecification
             .when()
                 .delete(COMMENTS_ENDPOINT + id)
             .then()
                 .statusCode(200);
 
-        ArrayList listOfDataFromDB = steps.getDataFromRowDB(resource, SQL_REQUEST_SELECT_COMMENT_BY_ID + id);
+        ArrayList listOfDataFromDB = databaseActions.getDataFromRowByIdDB(resource, id);
 
         softAssert.assertEquals(id, listOfDataFromDB.get(0), "Значение поля id не совпадает");
         softAssert.assertEquals("trash", listOfDataFromDB.get(3), "Значение поля status в БД не соответствует знач-ю trash. Delete-запрос прошёл некорректно");

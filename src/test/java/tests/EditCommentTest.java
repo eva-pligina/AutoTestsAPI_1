@@ -11,7 +11,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 @Epic("Комментарий")
@@ -22,22 +21,23 @@ public class EditCommentTest extends BaseTest {
 
     @BeforeMethod
     @Parameters({"resource"})
-    public void beforeMethod(String resource) throws SQLException, JsonProcessingException {
-        steps.tableRowManipulationDB(SQL_REQUEST_CREATE_COMMENT);
-        id = steps.getRowId(SQL_REQUEST_SELECT_COMMENT_LAST);
-        json = steps.convertEditPojoToJson(resource);
+    public void beforeMethod(String resource) throws JsonProcessingException {
+        databaseActions.createTableRowDB(resource);
+        id = databaseActions.getRowId(resource);
+        json = pojoActions.convertEditPojoToJson(resource);
     }
 
     @AfterMethod
-    public void afterMethod() throws SQLException {
-        steps.tableRowManipulationDB(SQL_REQUEST_DELETE_COMMENT_LAST);
+    @Parameters({"resource"})
+    public void afterMethod(String resource) {
+        databaseActions.deleteLastTableRowDB(resource);
     }
 
     @Test
     @Story("POST-запрос для редактирования content у комментария по указанному id")
     @Severity(SeverityLevel.BLOCKER)
     @Parameters({"resource"})
-    public void editCommentTest(String resource) throws SQLException, JsonProcessingException {
+    public void editCommentTest(String resource) throws JsonProcessingException {
         requestSpecification
                 .body(json)
             .when()
@@ -45,10 +45,10 @@ public class EditCommentTest extends BaseTest {
             .then()
                 .statusCode(200);
 
-        ArrayList listOfDataFromDB = steps.getDataFromRowDB(resource, SQL_REQUEST_SELECT_COMMENT_BY_ID + id);
+        ArrayList listOfDataFromDB = databaseActions.getDataFromRowByIdDB(resource, id);
 
         softAssert.assertEquals(id, listOfDataFromDB.get(0), "Значение поля id не совпадает");
-        softAssert.assertEquals(steps.convertJsonToCommentModel(json).getContent(), listOfDataFromDB.get(2), "Значение поля content в БД не соответствует указанному в post-запросе");
+        softAssert.assertEquals(pojoActions.convertJsonToCommentModel(json).getContent(), listOfDataFromDB.get(2), "Значение поля content в БД не соответствует указанному в post-запросе");
         softAssert.assertEquals("comment", listOfDataFromDB.get(4), "Значение поля type в БД не соответствует значению comment. Был создан не комментарий!");
         softAssert.assertAll();
     }

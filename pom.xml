@@ -50,6 +50,18 @@
         </dependency>
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>env_local</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <config.location.env>configuration/env_local.properties</config.location.env>
+            </properties>
+        </profile>
+    </profiles>
+
     <build>
         <defaultGoal>clean test</defaultGoal>
         <plugins>
@@ -76,6 +88,7 @@
                         </property>
                     </systemProperties>
                     <systemPropertyVariables>
+                        <config.location.env>${config.location.env}</config.location.env>
                         <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
                     </systemPropertyVariables>
                 </configuration>

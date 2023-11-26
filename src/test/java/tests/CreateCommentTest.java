@@ -6,12 +6,12 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import io.qameta.allure.Story;
+import model.CommentModel;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 @Epic("Комментарий")
@@ -22,19 +22,20 @@ public class CreateCommentTest extends BaseTest {
     @BeforeMethod
     @Parameters({"resource"})
     public void beforeMethod(String resource) throws JsonProcessingException {
-        json = steps.convertPojoToJson(resource);
+        json = pojoActions.convertPojoToJson(resource);
     }
 
     @AfterMethod
-    public void afterMethod() throws SQLException {
-        steps.tableRowManipulationDB(SQL_REQUEST_DELETE_COMMENT_LAST);
+    @Parameters({"resource"})
+    public void afterMethod(String resource) {
+        databaseActions.deleteLastTableRowDB(resource);
     }
 
     @Test
     @Story("POST-запрос для создания комментария с указанием значений полей content, status, post")
     @Severity(SeverityLevel.BLOCKER)
     @Parameters({"resource"})
-    public void createCommentTest(String resource) throws SQLException, JsonProcessingException {
+    public void createCommentTest(String resource) throws JsonProcessingException {
         requestSpecification
                 .body(json)
             .when()
@@ -42,10 +43,11 @@ public class CreateCommentTest extends BaseTest {
             .then()
                 .statusCode(201);
 
-        ArrayList listOfDataFromDB = steps.getDataFromRowDB(resource, SQL_REQUEST_SELECT_COMMENT_LAST);
+        ArrayList listOfDataFromDB = databaseActions.getDataFromLastRowDB(resource);
+        CommentModel commentModel = pojoActions.convertJsonToCommentModel(json);
 
-        softAssert.assertEquals(steps.convertJsonToCommentModel(json).getPost(), listOfDataFromDB.get(1), "Значение поля post в БД не соответствует указанному в post-запросе");
-        softAssert.assertEquals(steps.convertJsonToCommentModel(json).getContent(), listOfDataFromDB.get(2), "Значение поля content в БД не соответствует указанному в post-запросе");
+        softAssert.assertEquals(commentModel.getPost(), listOfDataFromDB.get(1), "Значение поля post в БД не соответствует указанному в post-запросе");
+        softAssert.assertEquals(commentModel.getContent(), listOfDataFromDB.get(2), "Значение поля content в БД не соответствует указанному в post-запросе");
         softAssert.assertEquals("1", listOfDataFromDB.get(3), "Значение поля status в БД не соответствует указанному в post-запросе");
         softAssert.assertEquals("comment", listOfDataFromDB.get(4), "Значение поля type в БД не соответствует значению comment. Был создан не комментарий!");
         softAssert.assertAll();
