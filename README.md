@@ -17,6 +17,25 @@
 Инструкция по развертыванию проекта: [https://drive.google.com/file/d/1AtQP_ZMiHeUmGX6zE4PVr2P2JFaOiaxP/view](https://drive.google.com/file/d/1AtQP_ZMiHeUmGX6zE4PVr2P2JFaOiaxP/view)  
 После развертывания проекта для доступа к API WordPress можно воспользоваться ссылкой: [http://localhost:8000/index.php?rest_route=/](http://localhost:8000/index.php?rest_route=/)
 
+## Ниже представлена краткая информация данного проекта в выпадающих списках
+<details>
+<summary>Кратко по выполнению задания</summary>
+
+Реализовано формирование отчетов Allure;  
+  
+Удаление/создание тестовых данных прямо в БД через код Java (JDBC);  
+  
+Параметризация с помощью Parameters;  
+
+Запуск API в докере.
+</details>
+<details>
+<summary>Что требовалось</summary>
+Проверять, создался (изменился) ли объект в базе и правильно ли записались его параметры, заданные через запрос к API, а также проверять удаление.  
+
+Реализовать создание тестовых данных прямо в БД (запросами) таким образом, чтобы после прохождения тестов их легко можно было удалить.
+</details>
+
 ## Тест-кейс. Создание поста
 #### Предусловие:
 1. Развернуть проект WordPress локально согласно инструкции: [https://drive.google.com/file/d/1AtQP_ZMiHeUmGX6zE4PVr2P2JFaOiaxP/view](https://drive.google.com/file/d/1AtQP_ZMiHeUmGX6zE4PVr2P2JFaOiaxP/view)
